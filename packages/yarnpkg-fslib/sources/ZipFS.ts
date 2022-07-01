@@ -983,6 +983,14 @@ export class ZipFS extends BasePortableFakeFS {
     }
   }
 
+  async fchmodPromise(fd: number, mask: number): Promise<void> {
+    return this.chmodPromise(this.fdToPath(fd, `fchmod`), mask);
+  }
+
+  fchmodSync(fd: number, mask: number): void {
+    return this.chmodSync(this.fdToPath(fd, `fchmodSync`), mask);
+  }
+
   async chmodPromise(p: PortablePath, mask: number) {
     return this.chmodSync(p, mask);
   }
@@ -1240,10 +1248,8 @@ export class ZipFS extends BasePortableFakeFS {
   }
 
   mkdirSync(p: PortablePath, {mode = 0o755, recursive = false}: MkdirOptions = {}) {
-    if (recursive) {
-      this.mkdirpSync(p, {chmod: mode});
-      return;
-    }
+    if (recursive)
+      return this.mkdirpSync(p, {chmod: mode});
 
     if (this.readOnly)
       throw errors.EROFS(`mkdir '${p}'`);
@@ -1255,6 +1261,7 @@ export class ZipFS extends BasePortableFakeFS {
 
     this.hydrateDirectory(resolvedP);
     this.chmodSync(resolvedP, mode);
+    return undefined;
   }
 
   async rmdirPromise(p: PortablePath, opts?: RmdirOptions) {
