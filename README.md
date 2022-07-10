@@ -1,9 +1,6 @@
-<p align="center">
-  <a href="https://yarnpkg.com/">
-    <img alt="Yarn" src="https://github.com/yarnpkg/assets/blob/master/yarn-kitten-full.png?raw=true" width="546">
-  </a>
-</p>
+As described in @yarnpkg/berry [Issue #1818](https://github.com/yarnpkg/berry/issues/1818), using Yarn 3.2.1 with Node 18 can sometimes throw the following error:
 
+<<<<<<< HEAD
 <p align="center">
   Fast, reliable, and secure dependency management.
 </p>
@@ -178,12 +175,29 @@ Clone this repository, then run the following commands:
 
 ```bash
 yarn build:cli
+=======
+```log
+TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received an instance of Buffer
+    at new NodeError (node:internal/errors:388:5)
+    at validateString (node:internal/validators:114:11)
+    at Object.isAbsolute (node:path:1157:5)
+    at VirtualFS.mapToBase (.../Code/nest-vue/.pnp.cjs:31524:24)
+    at VirtualFS.rmdirSync (.../Code/nest-vue/.pnp.cjs:31367:39)
+    at PosixFS.rmdirSync (.../Code/nest-vue/.pnp.cjs:31367:24)
+    at URLFS.rmdirSync (.../Code/nest-vue/.pnp.cjs:31367:24)
+    at _rmdirSync (node:internal/fs/rimraf:260:21)
+    at rimrafSync (node:internal/fs/rimraf:193:7)
+    at node:internal/fs/rimraf:253:9 {
+  code: 'ERR_INVALID_ARG_TYPE'
+}
+>>>>>>> a32a11a63 (Update .pnp.cjs template hook to use the temporary fix suggested by https://github.com/yarnpkg/berry/issues/1818\#issuecomment-1065829365)
 ```
 
-**How it works**
+This repo patches `sources/hook.js` in @yarnpkg/pnp, which provides the template for the `.pnp.cjs` file where the issue arises, based on the [temporary fix provided by vicary](https://github.com/yarnpkg/berry/issues/1818#issuecomment-1065829365).
 
-After building the CLI your global `yarn` will immediately start to reflect your local changes. This is because Yarn will pick up the [`yarnPath`](https://yarnpkg.com/configuration/yarnrc#yarnPath) settings in this repository's [`.yarnrc.yml`](https://yarnpkg.com/configuration/yarnrc), which is configured to use the newly built CLI if available.
+Because yarn runs from a compiled release file in your local repository at `./.yarn/releases/yarn-*-.cjs`, the patch has to be compiled into the release. Do this in your local project by running
 
+<<<<<<< HEAD
 **Works out of the box!**
 
 Note that no other command is needed! Given that our dependencies are checked-in within the repository (within the [`.yarn/cache`](.yarn/cache) directory), you don't even need to run [`yarn install`](https://yarnpkg.com/cli/install). Everything just works right after cloning the project and is guaranteed to continue to work ten years from now 🙂
@@ -246,4 +260,10 @@ The following packages are meant to be used by Yarn itself, and probably won't b
 
 - [@yarnpkg/builder](packages/yarnpkg-builder) contains a CLI tool to package berry and its plugins.
 - [@yarnpkg/cli](packages/yarnpkg-cli) is a CLI entry point built on top of [@yarnpkg/core](packages/yarnpkg-core).
+=======
+```bash
+yarn set version from sources --repository https://github.com/troncali/yarn-3.2.1-pnp-patch
+```
+>>>>>>> a32a11a63 (Update .pnp.cjs template hook to use the temporary fix suggested by https://github.com/yarnpkg/berry/issues/1818\#issuecomment-1065829365)
 
+[Read more about `yarn set version from sources`](https://yarnpkg.com/cli/set/version/from/sources).
